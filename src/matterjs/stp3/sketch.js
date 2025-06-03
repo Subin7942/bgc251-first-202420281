@@ -10,13 +10,18 @@ const Engine = Matter.Engine,
   Bodies = Matter.Bodies;
 
 var engine, world;
-var runner = Runner.create();
+var runner;
 var stack;
 
+// add mouse control
+var mouse;
+var mouseConstraint;
+
 function setup() {
-  createCanvas(800, 600);
+  let aCanvas = createCanvas(800, 600);
   // create engine
-  (engine = Engine.create()), (world = engine.world);
+  engine = Engine.create();
+  world = engine.world;
 
   // create runner
   runner = Runner.create();
@@ -62,15 +67,34 @@ function setup() {
 
   Composite.add(world, stack);
 
-  Composite.add(world, [
-    // walls
+  walls = [
     Bodies.rectangle(400, 0, 800, 50, { isStatic: true }),
     Bodies.rectangle(400, 600, 800, 50, { isStatic: true }),
     Bodies.rectangle(800, 300, 50, 600, { isStatic: true }),
     Bodies.rectangle(0, 300, 50, 600, { isStatic: true }),
-  ]);
+  ];
+
+  Composite.add(world, walls);
+
+  console.log(aCanvas.elt);
+
+  // add mouse control
+  mouse = Mouse.create(aCanvas.elt);
+  mouse.pixelRatio = pixelDensity();
+  mouseConstraint = MouseConstraint.create(engine, {
+    mouse: mouse,
+    constraint: {
+      stiffness: 0.2,
+      render: {
+        visible: false,
+      },
+    },
+  });
+
+  Composite.add(world, mouseConstraint);
 
   console.log(stack);
+  console.log(world);
 }
 
 function drawBody(body) {
@@ -94,17 +118,3 @@ function draw() {
     drawBody(aBody);
   }
 }
-
-// // add mouse control
-// var mouse = Mouse.create(render.canvas),
-//     mouseConstraint = MouseConstraint.create(engine, {
-//         mouse: mouse,
-//         constraint: {
-//             stiffness: 0.2,
-//             render: {
-//                 visible: false
-//             }
-//         }
-//     });
-
-// Composite.add(world, mouseConstraint);

@@ -26,24 +26,28 @@ function draw() {
     let g = video.pixels[idx * 4 + 1];
     let b = video.pixels[idx * 4 + 2];
     let a = video.pixels[idx * 4 + 3];
-    // fill(r, g, b, a);
-    // noStroke();
-    // square(10 * column, 10 * row, 10); // 숫자 조정으로 픽셀 크기 조정
-    let c = color(r, g, b, a);
-    let brightnessValue = brightness(c);
-    fill(255);
+    if (mouseIsPressed) {
+      fill(r, 0, 0, a);
+    } else {
+      fill(r, g, b, a);
+    }
     noStroke();
+    square(10 * column, 20 * row, 20); // 숫자 조정으로 픽셀 크기 조정
+    //let c = color(r, g, b, a);
+    //let brightnessValue = brightness(c);
+    //fill(255);
+    //noStroke();
     // circle(15 * column, row * 15, (50 * brightnessValue) / 255);
-    let charIdx = map(brightnessValue, 0, 255, 0, greyChars.length - 1);
-    let char = greyChars.charAt(charIdx);
-    let charSize = 20;
-    textSize(charSize);
-    textAlign(CENTER, CENTER);
-    text(
-      char,
-      charSize * column + 0.5 * charSize,
-      charSize * row + 0.5 * charSize
-    );
+    //let charIdx = map(brightnessValue, 0, 255, 0, greyChars.length - 1);
+    //let char = greyChars.charAt(charIdx);
+    //let charSize = 20;
+    //textSize(charSize);
+    //textAlign(CENTER, CENTER);
+    //text(
+    //  char,
+    //  charSize * column + 0.5 * charSize,
+    //  charSize * row + 0.5 * charSize
+    //);
   }
   fill('red');
   circle(mouseX, mouseY, 50);

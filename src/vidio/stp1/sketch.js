@@ -26,11 +26,9 @@ function draw() {
     let g = video.pixels[idx * 4 + 1];
     let b = video.pixels[idx * 4 + 2];
     let a = video.pixels[idx * 4 + 3];
-    if (mouseIsPressed) {
-      fill(r, 0, 0, a);
-    } else {
-      fill(r, g, b, a);
-    }
+
+    fill(r, g, b, a);
+
     noStroke();
     square(10 * column, 20 * row, 20); // 숫자 조정으로 픽셀 크기 조정
     //let c = color(r, g, b, a);

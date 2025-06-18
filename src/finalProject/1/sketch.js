@@ -14,18 +14,14 @@ let damage = false;
 
 function setup() {
   createCanvas(820, 715);
-
+  // 비디오 만들고 크기 조정 뒤 없애기(나중에 픽셀로 재현)
   video = createCapture(VIDEO, { flipped: true });
   video.size(50, 50);
   video.hide();
 
-  console.log(video);
-  video.loadPixels();
-  console.log(video.pixels.length);
-
-  //총알 불러오기
+  // 총알 불러오기
   bullet.makeBullet(-10, -10, 30);
-
+  // 별 여러 개 생성
   for (let idxS = 0; idxS < starCount; idxS++) {
     let x = random(width);
     let y = random(height);
@@ -34,7 +30,7 @@ function setup() {
     s.makeStar(x, y, speed);
     stars.push(s);
   }
-
+  // 적 여러 개 생성
   for (let idxE = 0; idxE < enemyCount; idxE++) {
     let x = random(width);
     let y = random(200, 500);
@@ -46,34 +42,38 @@ function setup() {
 }
 
 function draw() {
+  // 비디오의 픽셀 정보 불러오기
   video.loadPixels();
+  // console.log(video);
+  // console.log(video.pixels.length);
 
   background('black');
 
-  for (let s of stars) {
-    s.update();
-    s.render();
-    if (s.position.x < -10) {
-      s.position.x = width + random(10, 100);
-      s.position.y = random(height);
+  // 생성한 별을 업데이트하고 랜더링
+  for (let star of stars) {
+    star.update();
+    star.render();
+    if (star.position.x < -10) {
+      star.position.x = width + random(10, 100);
+      star.position.y = random(height);
     }
   }
-
-  for (let e of enemies) {
-    e.update();
-    e.render();
-    if (e.position.x < -10) {
-      e.position.x = width + random(10, 100);
-      e.position.y = random(200, 500);
+  // 생성한 적을 업데이트하고 랜더링
+  for (let enemy of enemies) {
+    enemy.update();
+    enemy.render();
+    if (enemy.position.x < -10) {
+      enemy.position.x = width + random(10, 100);
+      enemy.position.y = random(200, 500);
     }
   }
-
+  // 총알과 영웅 업데이트 및 렌더링
   bullet.update();
   bullet.render();
   hero.makeHero(50, mouseY);
   hero.render();
 
-  // 공격 횟수가 괴물의 체력보다 많거나 같으면 웹캠의 위치에 검은 화면을 띄우고 draw 정지
+  // 영웅이 이겼을 때
   if (attackNum >= Hp) {
     fill('black');
     rect(0, 0, width, height);
@@ -83,6 +83,7 @@ function draw() {
     return;
   }
 
+  // 영웅과 적의 거리를 계산하고 영웅이 적에게 맞았는지 판단
   let damageThisFrame = false;
 
   for (let e of enemies) {
@@ -92,15 +93,20 @@ function draw() {
       e.position.x,
       e.position.y
     );
+    if (damageThisFrame || damage) {
+      fill('orange');
+    }
     if (distanceHE < 40) {
       damageThisFrame = true;
     }
     if (damageThisFrame && !damage) {
       heroHp--;
       damage = true;
+      break; // 한 번만 맞게 하기 위해서
     } else if (!damageThisFrame) {
       damage = false;
     }
+    // 괴물이 이겼을 때
     if (heroHp <= 0) {
       fill('black');
       rect(0, 0, width, height);
@@ -111,6 +117,7 @@ function draw() {
     }
   }
 
+  // 영웅의 체력
   for (let idxH = 0; idxH < heroHp; idxH++) {
     stroke('black');
     strokeWeight(2);
@@ -130,12 +137,13 @@ function draw() {
   strokeWeight(2);
   fill('white');
   textSize(20);
-  text('Monster', spaceX + video.width * 2.3, height * 0.25);
-  text('Hp' + (Hp - attackNum), spaceX + video.width * 2.6, height * 0.75);
+  text('Monster', spaceX + video.width * 2.3, height * 0.3 - 10);
+  text('Hp' + (Hp - attackNum), spaceX + video.width * 2.6, height * 0.75 + 5);
   let atIdx = map(attackNum, 0, Hp, 0, width - spaceX);
   fill('red');
   rect(spaceX + atIdx, height - spaceY + 5, width - spaceX, 10);
 
+  // 비디오의 픽셀 정보를 이용해 괴물 만들기
   for (let idx = 0; idx < video.pixels.length / 4; idx++) {
     let column = idx % video.width;
     let row = floor(idx / video.width);
